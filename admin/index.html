@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Vouchers</title>
+    <style>
+        body { font-family: 'Georgia', serif; background: #f0f2f5; padding: 20px; display: none; }
+        .admin-box { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        h2 { color: #d63447; text-align: center; margin-bottom: 20px; }
+        .stats { display: flex; gap: 15px; margin-bottom: 25px; }
+        .stat-card { flex: 1; background: #fff5f6; padding: 15px; text-align: center; border-radius: 10px; border: 1px solid #ffdde1; }
+        .stat-card h3 { font-size: 24px; color: #d63447; }
+        .list-item { display: flex; justify-content: space-between; padding: 12px 5px; border-bottom: 1px solid #eee; font-size: 14px; }
+        .status-tag { font-weight: bold; }
+        .btn { display: block; width: 100%; padding: 12px; margin-top: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .btn-sync { background: #34a853; color: white; }
+        .btn-reset { background: #f8f9fa; color: #888; margin-top: 30px; font-size: 12px; text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="admin-box">
+        <h2>Admin Dashboard</h2>
+        <div class="stats">
+            <div class="stat-card"><h3 id="totalCount">12</h3><p>Vouchers</p></div>
+            <div class="stat-card"><h3 id="redeemedCount">0</h3><p>Used</p></div>
+        </div>
+        <div id="voucherList"></div>
+        <button class="btn btn-sync" onclick="syncToSheets()">Push Changes to Sheets</button>
+        <button class="btn btn-reset" onclick="resetVouchers()">Reset All to Available</button>
+        <p id="msg" style="text-align:center; font-size: 12px; margin-top: 10px; color: #666;"></p>
+    </div>
+
+    <script>
+        const ADMIN_PASSWORD = "taiwan_number_one"; // CHANGE THIS PASSWORD!
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyXF7Lrs1udVO_1dpqoGA-zXdEU5r6mFLhz13mUq8awCyZHM8GkEarjkpzwcWYiKtIr/exec";
+
+        // Password Protection
+        const entry = prompt("Enter Admin Password:");
+        if (entry === ADMIN_PASSWORD) {
+            document.body.style.display = "block";
+        } else {
+            alert("Wrong password!");
+            window.location.href = "../index.html";
+        }
+
+        const voucherTitles = [
+            "breakfast in bed", "massage", "big hug", "bath session", "passionate kiss", 
+            "make-out session", "movie night", "weekend getaway", "date night", 
+            "cuddle session", "30 min nap", "yes day"
+        ];
+
+        function refreshAdmin() {
+            const status = JSON.parse(localStorage.getItem('voucherStatus') || '{}');
+            let used = 0;
+            const html = voucherTitles.map((title, index) => {
+                const id = index + 1;
+                const isUsed = status[id]?.redeemed || false;
+                if(isUsed) used++;
+                return `
+                    <div class="list-item">
+                        <span>${title}</span>
+                        <span class="status-tag" style="color:${isUsed ? '#d63447' : '#34a853'}">${isUsed ? 'Used' : 'Available'}</span>
+                    </div>`;
+            }).join('');
+            document.getElementById('voucherList').innerHTML = html;
+            document.getElementById('redeemedCount').innerText = used;
+        }
+
+        async function syncToSheets() {
+            document.getElementById('msg').innerText = "Uploading...";
+            const status = JSON.parse(localStorage.getItem('voucherStatus') || '{}');
+            const data = voucherTitles.map((t, i) => ({
+                id: i + 1, title: t, redeemed: status[i+1]?.redeemed || false,
+                redeemedDate: status[i+1]?.redeemedDate || ''
+            }));
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'sync', data: data }) });
+            document.getElementById('msg').innerText = "✓ Sync Complete";
+        }
+
+        function resetVouchers() {
+            if(confirm("Mark everything as available?")) {
+                const fresh = {};
+                voucherTitles.forEach((_, i) => fresh[i+1] = {redeemed: false, redeemedDate: null});
+                localStorage.setItem('voucherStatus', JSON.stringify(fresh));
+                refreshAdmin();
+                syncToSheets();
+            }
+        }
+
+        refreshAdmin();
+    </script>
+</body>
+</html>

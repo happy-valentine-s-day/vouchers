@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Day Vouchers 2026</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Georgia', serif; background: #ffeef8; min-height: 100vh; padding: 15px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 25px; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .header h1 { font-size: clamp(1.4em, 5vw, 2em); color: #d63447; text-transform: uppercase; letter-spacing: 2px; }
+        
+        /* GRID LOGIC: 2 on Desktop, 1 on Mobile */
+        .vouchers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        @media (max-width: 768px) { .vouchers-grid { grid-template-columns: 1fr; } }
+
+        /* TICKET DESIGN */
+        .voucher { background: white; border: 10px solid #d63447; position: relative; display: flex; min-height: 200px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow: hidden; }
+        .voucher::before, .voucher::after { content: ''; position: absolute; width: 30px; height: 30px; background: #ffeef8; border: 5px solid #d63447; border-radius: 50%; left: 75px; z-index: 5; }
+        .voucher::before { top: -18px; } .voucher::after { bottom: -18px; }
+
+        .barcode-section { width: 90px; border-right: 2px dashed #d63447; display: flex; align-items: center; justify-content: center; padding: 5px; background: white; }
+        .barcode-img { width: 40px; height: 120px; background: repeating-linear-gradient(90deg, #000 0px, #000 1px, #fff 1px, #fff 2px, #000 2px, #000 4px, #fff 4px, #fff 5px, #000 5px, #000 6px, #fff 6px, #fff 8px); }
+        .voucher-main { flex: 1; padding: 15px; display: flex; flex-direction: column; justify-content: center; text-align: center; }
+        .voucher-header { font-size: 10px; letter-spacing: 1.5px; color: #d63447; font-weight: bold; }
+        .voucher-title h2 { font-size: 1.4em; color: #000; font-weight: 900; margin: 5px 0; text-transform: lowercase; }
+        .voucher-description { font-style: italic; font-size: 12px; color: #555; margin: 5px 0; line-height: 1.3; }
+        .voucher-footer { font-size: 9px; color: #888; margin-top: 5px; }
+
+        /* REDEEMED STATE */
+        .voucher.redeemed { opacity: 0.6; filter: grayscale(1); }
+        .voucher.redeemed::after { content: 'USED'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg); font-size: 3em; color: rgba(214, 52, 71, 0.5); font-weight: bold; border: 4px solid rgba(214, 52, 71, 0.5); padding: 5px 15px; z-index: 10; }
+        .redeem-btn { background: #d63447; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 11px; margin-top: 10px; font-weight: bold; align-self: center; }
+        .redeem-btn:disabled { background: #ccc; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>❤️ めいめいの Valentine's Vouchers ❤️</h1>
+        </div>
+        <div id="vouchersView">
+            <div class="vouchers-grid" id="vouchersGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyXF7Lrs1udVO_1dpqoGA-zXdEU5r6mFLhz13mUq8awCyZHM8GkEarjkpzwcWYiKtIr/exec";
+
+        const vouchers = [
+            { id: 1, title: "breakfast in bed", description: "Delicious morning meal served to you. (Used only outside Freddy's place).", code: "VAL2026-BED" },
+            { id: 2, title: "massage", description: "30 minutes of relaxation and stress relief.", code: "VAL2026-MSG" },
+            { id: 3, title: "big hug", description: "A warm, long embrace whenever you need one.", code: "VAL2026-HUG" },
+            { id: 4, title: "bath session", description: "I'll gently bathe you in a warm, relaxing bath.", code: "VAL2026-BS" },
+            { id: 5, title: "passionate kiss", description: "One extra special, long-lasting romantic kiss.", code: "VAL2026-KIS" },
+            { id: 6, title: "make-out session", description: "Quality time for just the two of us.", code: "VAL2026-MKO" },
+            { id: 7, title: "movie night", description: "You pick the movie, I'll provide the snacks.", code: "VAL2026-MOV" },
+            { id: 8, title: "weekend getaway", description: "A special trip planned for a future weekend.", code: "VAL2026-GET" },
+            { id: 9, title: "date night", description: "A romantic evening out at your favorite spot.", code: "VAL2026-DAT" },
+            { id: 10, title: "cuddle session", description: "Unlimited snuggles during your favorite show.", code: "VAL2026-CUD" },
+            { id: 11, title: "30 min nap", description: "Peace for a perfect power nap. (Sofa bed or fresh sheets only).", code: "VAL2026-NAP" },
+            { id: 12, title: "yes day", description: "I'll say yes to anything today! (Within Freddy's ability).", code: "VAL2026-YES" }
+        ];
+
+        function getVoucherStatus() { return JSON.parse(localStorage.getItem('voucherStatus') || '{}'); }
+
+        function renderVouchers() {
+            const grid = document.getElementById('vouchersGrid');
+            const status = getVoucherStatus();
+            grid.innerHTML = vouchers.map(v => {
+                const isRedeemed = status[v.id]?.redeemed || false;
+                return `
+                    <div class="voucher ${isRedeemed ? 'redeemed' : ''}">
+                        <div class="barcode-section"><div class="barcode-img"></div></div>
+                        <div class="voucher-main">
+                            <div class="voucher-header">REDEEM FOR ONE</div>
+                            <div class="voucher-title"><h2>${v.title}</h2></div>
+                            <div class="voucher-description">"${v.description}"</div>
+                            <div class="voucher-footer">${v.code}</div>
+                            <div class="redeem-section">
+                                <button class="redeem-btn" onclick="redeemVoucher(${v.id})" ${isRedeemed ? 'disabled' : ''}>
+                                    ${isRedeemed ? 'REDEEMED' : 'USE NOW'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        async function redeemVoucher(id) {
+            if (confirm("Redeem this voucher?")) {
+                const status = getVoucherStatus();
+                status[id] = { redeemed: true, redeemedDate: new Date().toISOString() };
+                localStorage.setItem('voucherStatus', JSON.stringify(status));
+                renderVouchers();
+                
+                const data = vouchers.map(v => ({ id: v.id, title: v.title, code: v.code, redeemed: status[v.id]?.redeemed || false, redeemedDate: status[v.id]?.redeemedDate || '' }));
+                await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'sync', data: data }) });
+            }
+        }
+
+        async function loadFromSheets() {
+            try {
+                const res = await fetch(SCRIPT_URL + "?action=load");
+                const data = await res.json();
+                if (data.vouchers) {
+                    const status = {};
+                    data.vouchers.forEach(v => { status[v.id] = { redeemed: v.redeemed, redeemedDate: v.redeemedDate }; });
+                    localStorage.setItem('voucherStatus', JSON.stringify(status));
+                    renderVouchers();
+                }
+            } catch (e) { console.log("Sync skipped"); }
+        }
+
+        renderVouchers();
+        loadFromSheets();
+        setInterval(loadFromSheets, 30000);
+    </script>
+</body>
+</html>
