@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>A Special Invitation 💝</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Cormorant+Garamond:wght@400;600&family=Noto+Serif+JP:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        :root {
+            --rose-petal: #ffd6e8;
+            --deep-rose: #ff5c93;
+            --romantic-purple: #8b5a8e;
+            --warm-cream: #fff8f0;
+            --gold-accent: #d4af37;
+        }
+
+        body {
+            /* Prioritize Noto Serif JP for a more elegant, "novel-like" feel */
+            font-family: 'Cormorant Garamond', 'Noto Serif JP', serif;
+            background: linear-gradient(135deg, #fff8f0 0%, #ffd6e8 100%);
+            min-height: 100vh;
+            padding: env(safe-area-inset-top) 15px env(safe-area-inset-bottom) 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        /* Background Animation */
+        .heart {
+            position: fixed;
+            font-size: 20px;
+            animation: float-hearts linear infinite;
+            z-index: 1;
+            user-select: none;
+        }
+
+        @keyframes float-hearts {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            z-index: 10;
+        }
+
+        .envelope {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: clamp(35px, 10vw, 65px) clamp(20px, 6vw, 45px);
+            box-shadow: 0 15px 35px rgba(139, 90, 142, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.2rem, 10vw, 3.2rem);
+            background: linear-gradient(135deg, var(--romantic-purple), var(--deep-rose));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            color: var(--romantic-purple);
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .divider {
+            width: 80px;
+            height: 1px;
+            background: var(--gold-accent);
+            margin: 25px auto;
+            position: relative;
+        }
+
+        .divider::after {
+            content: '❤';
+            position: absolute;
+            top: -10px; left: 50%;
+            transform: translateX(-50%);
+            background: #ffffff;
+            padding: 0 8px;
+            color: var(--deep-rose);
+            font-size: 14px;
+        }
+
+        .content {
+            margin-bottom: 20px;
+        }
+
+        .content p {
+            font-size: clamp(1.1rem, 4.5vw, 1.25rem);
+            color: #5a4b5c;
+            line-height: 2; /* Increased line height for Japanese readability */
+            margin-bottom: 15px;
+            letter-spacing: 0.05em; /* Added slight tracking for beauty */
+        }
+
+        /* Styling the name specifically */
+        .recipient-name {
+            font-weight: 600;
+            font-size: 1.4rem;
+            border-bottom: 1px solid var(--rose-petal);
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .highlight {
+            color: var(--deep-rose);
+            font-weight: 600;
+            display: block;
+            font-size: 1.4rem;
+            margin-top: 10px;
+            font-family: 'Noto Serif JP', serif;
+        }
+
+        .trip-details {
+            background: rgba(255, 214, 232, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 30px 0;
+            border: 1px solid rgba(255, 92, 147, 0.2);
+            text-align: left;
+        }
+
+        .trip-details p {
+            font-size: 1.05rem;
+            margin-bottom: 12px;
+            color: #5a4b5c;
+            display: flex;
+            align-items: center;
+        }
+
+        .trip-details strong {
+            color: var(--deep-rose);
+            width: 100px; /* Aligns the labels */
+            font-family: 'Noto Serif JP', serif;
+        }
+
+        .reveal-btn {
+            background: linear-gradient(135deg, var(--deep-rose), var(--romantic-purple));
+            color: white;
+            border: none;
+            padding: 18px 32px;
+            font-size: 1.1rem;
+            font-family: 'Playfair Display', 'Noto Serif JP', serif;
+            border-radius: 50px;
+            width: 100%;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(255, 92, 147, 0.3);
+            transition: all 0.3s;
+        }
+
+        .reveal-btn:active { transform: scale(0.96); }
+
+        .gift-section { display: none; margin-top: 30px; animation: fadeInUp 0.8s ease; }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .qr-container {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            display: inline-block;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .qr-container img {
+            width: 100%;
+            max-width: 240px;
+            height: auto;
+            display: block;
+        }
+
+        .qr-link {
+            display: block;
+            margin-top: 15px;
+            color: var(--deep-rose);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 14px;
+            border: 2px solid var(--deep-rose);
+            border-radius: 25px;
+            font-family: 'Noto Serif JP', serif;
+        }
+
+        .footer { margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="heart" style="left:10%; animation-duration:8s;">💕</div>
+    <div class="heart" style="left:30%; animation-duration:12s; animation-delay:2s;">💖</div>
+    <div class="heart" style="left:70%; animation-duration:10s; animation-delay:1s;">💗</div>
+    <div class="heart" style="left:90%; animation-duration:9s; animation-delay:3s;">💝</div>
+
+    <div class="container">
+        <div class="envelope">
+            <div class="header">
+                <h1>Invitation</h1>
+                <p class="subtitle">A Romantic Escape</p>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="content">
+                <p class="recipient-name">宮田芽衣　様</p>
+                <p>荷物をまとめて、心の準備を。<br>二人で過ごす特別な時間。</p>
+                <p class="highlight">草津温泉への旅へ、ご招待します。</p>
+            </div>
+
+            <div class="trip-details">
+                <p>📍 <strong>行き先</strong> 草津温泉</p>
+                <p>🗓️ <strong>日程</strong> 2月14日 〜 2月15日</p>
+                <p>✨ <strong>内容</strong> 温泉、美味しいご飯、そして笑顔</p>
+            </div>
+
+            <div id="revealArea">
+                <button class="reveal-btn" onclick="revealGift()">✨ サプライズを見る ✨</button>
+            </div>
+
+            <div class="gift-section" id="giftSection">
+                <h3 style="color: var(--romantic-purple); font-family: 'Playfair Display'; margin-bottom: 10px;">For You</h3>
+                <div class="qr-container">
+                    <img src="../assets/qr_code.png" alt="QR Code">
+                </div>
+                <p style="font-size: 0.9rem; color: #888; font-family: 'Noto Serif JP';">QRコードをスキャンしてギフトをチェック</p>
+                <a href="https://happy-valentine-s-day.github.io/vouchers/" class="qr-link">バウチャーを開く 💝</a>
+            </div>
+
+            <div class="footer">
+                <!-- <p style="color: var(--romantic-purple); font-style: italic;">With all my love...</p> -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function revealGift() {
+            document.getElementById('revealArea').style.display = 'none';
+            const gift = document.getElementById('giftSection');
+            gift.style.display = 'block';
+            
+            if (navigator.vibrate) navigator.vibrate(50);
+            
+            setTimeout(() => {
+                gift.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+    </script>
+</body>
+</html>
